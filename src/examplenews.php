@@ -16,7 +16,6 @@ defined('_JEXEC') or die;
 use AE\Library\ExampleNews\FetchArticles;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Session\Session;
 
 JLoader::registerNamespace('\\AE\\Library\\ExampleNews\\', __DIR__ . '/classes/AE/Library/ExampleNews', false, false, 'psr4');
 
@@ -35,7 +34,7 @@ class PlgSystemExamplenews extends CMSPlugin
 	 * @since  0.1.0
 	 */
 	protected ?CMSApplication $app = null;
-	
+
 	/**
 	 * Database object
 	 *
@@ -65,10 +64,12 @@ class PlgSystemExamplenews extends CMSPlugin
 		// Session::checkToken('GET') || die(Text::_('JINVALID_TOKEN'));
 		
 		$verb = strtoupper($this->app->input->getMethod());
-		switch($verb) {
+		
+		switch ($verb)
+		{
 			case 'GET':
-				$fetchNewsArticles = new FetchArticles(' https://newsapi.org', 'v2/top-headlines', ['country' => 'ca', 'category' => 'business'], $this->app->input->getAlnum('apiKey', ''),null);
-				$response = $fetchNewsArticles(['Accept' => 'application/json', 'Content-Type' => 'application/json']);
+				$fetchNewsArticles = new FetchArticles(' https://newsapi.org', 'v2/top-headlines', ['country' => 'ca', 'category' => 'business'], $this->app->input->getAlnum('apiKey', ''), null);
+				$response          = $fetchNewsArticles(['Accept' => 'application/json', 'Content-Type' => 'application/json']);
 				$fetchNewsArticles->render($response);
 			default:
 				throw new BadMethodCallException('HTTP VERB Unknown', 405);

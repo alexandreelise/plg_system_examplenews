@@ -15,11 +15,17 @@ use function sprintf;
 final class FetchArticles
 {
 	private string $baseUrl = 'https://newsapi.org';
+
 	private string $basePath = 'v2/top-headlines';
+	
 	private array $data = [];
+	
 	private string $apiKey = '';
+	
 	private string $fullUrl = '';
+	
 	private ?Http $httpClient = null;
+	
 	/**
 	 * @var \Joomla\CMS\Http\Http|null
 	 */
@@ -53,7 +59,7 @@ final class FetchArticles
 		$this->apiKey = $apiKey;
 		
 		// use the StreamTransport rather than the default CurlTransport
-		$options = new Registry();
+		$options = new Registry;
 		
 		// More control when creating a Http client using getAvailableDriver static method
 		$myHttpClient = HttpFactory::getAvailableDriver($options, ['stream', 'curl']);
@@ -86,6 +92,7 @@ final class FetchArticles
 		{
 			header(sprintf('%s: %s', $key, $value));
 		}
+		
 		http_response_code($response->code);
 		echo $response->body;
 		die;
