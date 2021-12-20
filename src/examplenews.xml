@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="3.10" group="system" method="upgrade">
+	<name>PLG_SYSTEM_EXAMPLENEWS</name>
+	<creationDate>2021-12-20</creationDate>
+	<author>Alexandre ELISÉ</author>
+	<authorEmail>contact@alexapi.cloud</authorEmail>
+	<authorUrl>https://alexapi.cloud</authorUrl>
+	<copyright>Copyright(c) 2009 - 2021 Alexandre ELISÉ. All rights reserved</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<version>0.1.0</version>
+	<description>PLG_SYSTEM_EXAMPLENEWS_XML_DESCRIPTION</description>
+
+	<!-- Scripts to run on installation -->
+	<scriptfile>script.php</scriptfile>
+
+	<!-- Plugin files -->
+	<files>
+		<filename plugin="examplenews">examplenews.php</filename>
+		<filename>LICENSE</filename>
+		<folder>language</folder>
+		<folder>classes</folder>
+	</files>
+</extension>

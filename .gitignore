@@ -1,0 +1,8 @@
+.idea/*
+!/docs/
+!/src
+!/README.md
+!/composer.json
+!/phpdoc.xml
+
+/vendor/

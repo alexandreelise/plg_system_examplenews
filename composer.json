@@ -1,0 +1,32 @@
+{
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Alexandre ELISÉ",
+      "email": "contact@alexapi.cloud",
+      "homepage": "https://alexapi.cloud"
+    }
+  ],
+  "config": {
+    "optimize-autoloader": true,
+    "apcu-autoloader": true,
+    "sort-packages": true
+  },
+  "autoload": {
+    "psr-4": {
+      "AE\\Library\\ExampleNews\\": "./src/classes/AE/Library/ExampleNews"
+    }
+  },
+  "require": {
+    "php": ">=7.4.0",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-latest",
+    "phpunit/phpunit": "^9.5"
+  },
+  "scripts": {
+    "qa-all": "/home/alexandree/.config/composer/vendor/bin/phpcs --standard=/home/alexandree/.gene/qa/Gene --parallel=32 -p -v ./src",
+    "qa-fix-all": "/home/alexandree/.config/composer/vendor/bin/phpcbf --standard=/home/alexandree/.gene/qa/Gene --parallel=32 ./src"
+  }
+}
