@@ -20,4 +20,18 @@
 		<folder>language</folder>
 		<folder>classes</folder>
 	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="apiKey"
+				       type="text"
+					   autocomplete="true"
+					   autofocus="true"
+					   label="PLG_SYSTEM_EXAMPLENEWS_APIKEY_LABEL"
+					   description="PLG_SYSTEM_EXAMPLENEWS_APIKEY_DESCRIPTION"
+					   default=""
+				/>
+			</fieldset>
+		</fields>
+	</config>
 </extension>

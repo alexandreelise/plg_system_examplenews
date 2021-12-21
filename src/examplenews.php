@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 defined('_JEXEC') or die;
 
-use AE\Library\ExampleNews\FetchArticles;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Http\Response;
 use Joomla\CMS\Plugin\CMSPlugin;
-
-JLoader::registerNamespace('\\AE\\Library\\ExampleNews\\', __DIR__ . '/classes/AE/Library/ExampleNews', false, false, 'psr4');
+use Joomla\Input\Input;
+use Joomla\Registry\Registry;
 
 /**
  * Examplenews plugin.
@@ -42,13 +42,17 @@ class PlgSystemExamplenews extends CMSPlugin
 	 * @since  0.1.0
 	 */
 	protected ?JDatabaseDriver $db = null;
-	
+
+	/**
+	 * @param $subject
+	 * @param $config
+	 */
 	public function __construct(&$subject, $config = [])
 	{
 		$this->autoloadLanguage = true;
 		parent::__construct($subject, $config);
 	}
-	
+
 	/**
 	 * Fetch top-headlines articles from newsapi.org API using the Joomla! 3.10
 	 * Http Client and the StreamTransport
@@ -58,21 +62,100 @@ class PlgSystemExamplenews extends CMSPlugin
 	 */
 	public function onAjaxExamplenews()
 	{
+		if ($this->app->isClient('administrator'))
+		{
+			return;
+		}
+
+		$this->handleRequest($this->app->input);
+	}
+
+	public function onAfterInitialise()
+	{
+
+		if ($this->app->isClient('administrator'))
+		{
+			return;
+		}
+
+		$this->handleRequest($this->app->input);
+	}
+
+
+	/**
+	 * Provide a way to test this method independently
+	 *
+	 * @param   \Joomla\Input\Input|null  $givenInput
+	 *
+	 * @return mixed
+	 */
+	private function handleRequest(?Input $givenInput = null)
+	{
+		$input = $givenInput ?? $this->app->input;
+
 		//to be safe we should add a csrf-token verification
-		// but since a GET request is idempotent (does change with same input multiple times) we should be fine
+		// but since
+		// a GET request is idempotent (does change with same input multiple times) we should be fine
 		// If you feel it's insecuren, uncomment the next line
 		// Session::checkToken('GET') || die(Text::_('JINVALID_TOKEN'));
-		
-		$verb = strtoupper($this->app->input->getMethod());
-		
-		switch ($verb)
+
+		$verb = strtoupper($input->getMethod());
+
+		try
 		{
-			case 'GET':
-				$fetchNewsArticles = new FetchArticles(' https://newsapi.org', 'v2/top-headlines', ['country' => 'ca', 'category' => 'business'], $this->app->input->getAlnum('apiKey', ''), null);
-				$response          = $fetchNewsArticles(['Accept' => 'application/json', 'Content-Type' => 'application/json']);
-				$fetchNewsArticles->render($response);
-			default:
-				throw new BadMethodCallException('HTTP VERB Unknown', 405);
+			switch ($verb)
+			{
+				case 'GET':
+
+					$uri = new Joomla\CMS\Uri\Uri('https://newsapi.org/v2/top-headlines');
+
+					$uri->setQuery(
+						[
+							'country'  => 'ca',
+							'category' => 'business', 'apiKey' =>
+								$this->params->get('apiKey', ''),
+						]
+					);
+
+					$response          = new Response;
+					$response->headers = [
+						'Content-Type' => 'application/json',
+					];
+					$response->code    = 200;
+					$response->body    = file_get_contents((string) $uri);
+
+					// Render the response
+					$this->render($response);
+				default:
+					throw new BadMethodCallException('HTTP Verb Unknown', 405);
+			}
 		}
+		catch (Throwable $throwable)
+		{
+			header('Content-Type: application/json');
+			echo (new Registry($throwable))->toString();
+			die;
+		}
+	}
+
+	/**
+	 * @param   \Joomla\CMS\Http\Response  $response
+	 *
+	 * @return void
+	 */
+	private function render(Response $response)
+	{
+		// Clear headers first to prevent unexpected errors
+		// then redefined custom ones in the render method
+		$this->app->clearHeaders();
+
+		foreach ($response->headers as $key => $value)
+		{
+			header(sprintf('%s: %s', $key, $value));
+		}
+
+		http_response_code($response->code);
+		echo $response->body;
+		die;
 	}
 }
